@@ -49,15 +49,19 @@ Venue // table: venues
 
 // Hooks for models
 
-// Events
-export const useEvents = () => useQuery({
-    queryKey: ['events'],
-    queryFn: () => fromSupabase(supabase.from('events').select('*')),
-});
-export const useAddEvent = () => {
+export const useUpdateEvent = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (newEvent) => fromSupabase(supabase.from('events').insert([newEvent])),
+        mutationFn: (updatedEvent) => fromSupabase(supabase.from('events').update(updatedEvent).eq('id', updatedEvent.id)),
+        onSuccess: () => {
+            queryClient.invalidateQueries('events');
+        },
+    });
+};
+export const useDeleteEvent = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id) => fromSupabase(supabase.from('events').delete().eq('id', id)),
         onSuccess: () => {
             queryClient.invalidateQueries('events');
         },
